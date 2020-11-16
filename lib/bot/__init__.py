@@ -1,22 +1,25 @@
 from discord.ext.commands import Bot as BotBase
-from discord import Intents
+import discord
+from discord import Intents, Embed
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from datetime import datetime
 
 
-PREFIX = "!"
-OWNER_IDS = [755362525125672990]
+prefix = "!"
+owner_id = 755362525125672990
 
 
 class Bot(BotBase):
     def __init__(self):
         with open("./lib/bot/token.txt", "r", encoding="utf-8") as tf:
             self.TOKEN = tf.read()
-        self.PREFIX = PREFIX
+
+        self.PREFIX = prefix
         self.guild = None
         self.scheduler = AsyncIOScheduler()
         self.ready = False
 
-        super().__init__(command_prefix=PREFIX, owner_id=OWNER_IDS, intents=Intents.all())
+        super().__init__(command_prefix=prefix, owner_id=owner_id, intents=Intents.all())
 
     def run(self):
         print("running bot...")
@@ -33,9 +36,29 @@ class Bot(BotBase):
     async def on_ready(self):
         if not self.ready:
             self.ready = True
+
+            print("Bot is Ready!")
+
             self.guild = self.get_guild(773381459306217502)
             channel = self.get_channel(773582864335372288)
-            await channel.send("Bot is Ready!")
+
+            embed = Embed(title="I AM ONLINE!", description="I am ready to go",
+                          colour=discord.Colour.from_rgb(39, 228, 255), timestamp=datetime.utcnow())
+
+            embed.set_author(name="PYTHON BOT V2.0", icon_url=self.guild.icon_url)
+            embed.set_thumbnail(url=self.guild.icon_url)
+
+            fields = [("Owner", f"{self.get_user(owner_id)}", False),
+                      ("Inline", "This is inline", True),
+                      ("Inline 2", "Next to inline", True),
+                      ("Not Inline", "This is not inline", False)]
+
+            for name, value, inline in fields:
+                embed.add_field(name=name, value=value, inline=inline)
+
+            embed.set_footer(text="This is a footer!")
+
+            await channel.send(embed=embed)
 
         else:
             print("Bot Disconnected")
