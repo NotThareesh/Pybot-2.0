@@ -1,9 +1,7 @@
 from discord.ext.commands import Bot as BotBase, CommandNotFound
-import discord
-from discord import Intents, Embed
+from discord import Intents
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from datetime import datetime
 from ..db import db
 from glob import glob
 from asyncio import sleep
@@ -56,9 +54,9 @@ class Bot(BotBase):
 
         super().run(self.TOKEN, reconnect=True)
 
-    async def print_message(self):
-        stdout = self.get_channel(773582864335372288)
-        await stdout.send("Remember to adhere to the rules!")
+    @staticmethod
+    async def print_message(ctx):
+        await ctx.send("Remember to adhere to the rules!")
 
     @staticmethod
     async def on_connect():
@@ -76,17 +74,12 @@ class Bot(BotBase):
             self.scheduler.add_job(self.print_message, CronTrigger(hour="*", minute="59"))
             self.scheduler.start()
 
-            channel = self.get_channel(773582864335372288)
-            await channel.send("❤ I am Online!")
-
         else:
             print("Bot Disconnected")
 
     async def on_command_error(self, ctx, exception):
         if isinstance(exception, CommandNotFound):
-            logs_channel = self.get_channel(778465578834853918)
-            await logs_channel.send("Command Not Found")
-
+            await ctx.send("Command Not Found")
         else:
             raise exception
 
@@ -94,10 +87,8 @@ class Bot(BotBase):
         if event_method == "on_command_error":
             await args[0].send("Something went wrong")
         else:
-            channel = self.get_channel(778465578834853918)
-            await channel.send("An Error Occurred")
-
-        raise
+            logs_channel = self.get_channel(778465578834853918)
+            await logs_channel.send("An Error Occurred")
 
 
 bot = Bot()
