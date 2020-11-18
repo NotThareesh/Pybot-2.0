@@ -54,9 +54,9 @@ class Bot(BotBase):
 
         super().run(self.TOKEN, reconnect=True)
 
-    @staticmethod
-    async def print_message(ctx):
-        await ctx.send("Remember to adhere to the rules!")
+    async def print_message(self):
+        channel = self.get_channel(773582864335372288)
+        await channel.send("Remember to adhere to the rules!")
 
     @staticmethod
     async def on_connect():
@@ -86,9 +86,10 @@ class Bot(BotBase):
     async def on_error(self, event_method, *args, **kwargs):
         if event_method == "on_command_error":
             await args[0].send("Something went wrong")
-        else:
-            logs_channel = self.get_channel(778465578834853918)
-            await logs_channel.send("An Error Occurred")
+
+        logs_channel = self.get_channel(778465578834853918)
+        await logs_channel.send("An Error Occurred")
+        raise
 
 
 bot = Bot()
