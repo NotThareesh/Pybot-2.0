@@ -5,32 +5,60 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from datetime import datetime
 from ..db import db
+from glob import glob
+from asyncio import sleep
 
 
-prefix = "!"
-owner_id = 755362525125672990
+PREFIX = "!"
+OWNER_ID = 755362525125672990
+COGS = [path.split("\\")[-1][:-3] for path in glob("./lib/cogs/*.py")]
+
+
+class Ready:
+    def __init__(self):
+        for cog in COGS:
+            setattr(self, cog, False)
+
+    def ready_up(self, cog):
+        setattr(self, cog, True)
+        print(f"{cog} Cog Ready")
+
+    def all_ready(self):
+        return all([getattr(self, cog) for cog in COGS])
 
 
 class Bot(BotBase):
     def __init__(self):
         with open("./lib/bot/token.txt", "r", encoding="utf-8") as tf:
             self.TOKEN = tf.read()
-        self.PREFIX = prefix
+        self.PREFIX = PREFIX
         self.guild = None
         self.scheduler = AsyncIOScheduler()
         self.ready = False
+        self.cogs_ready = Ready()
 
         db.autosave(self.scheduler)
 
-        super().__init__(command_prefix=prefix, owner_id=owner_id, intents=Intents.all())
+        super().__init__(command_prefix=PREFIX, owner_id=OWNER_ID, intents=Intents.all())
+
+    def setup(self):
+        for cog in COGS:
+            self.load_extension(f"lib.cogs.{cog}")
+            print(f"{cog} Cog Loaded")
+
+        print("Setup Complete")
 
     def run(self):
         print("running bot...")
+
+        print("running setup...")
+        self.setup()
+
         super().run(self.TOKEN, reconnect=True)
 
     async def print_message(self):
-        channel = self.get_channel(773582864335372288)
-        await channel.send("Remember to adhere to the rules!")
+        stdout = self.get_channel(773582864335372288)
+        await stdout.send("Remember to adhere to the rules!")
 
     @staticmethod
     async def on_connect():
@@ -42,39 +70,22 @@ class Bot(BotBase):
 
     async def on_ready(self):
         if not self.ready:
+            while not self.cogs_ready.all_ready():
+                await sleep(0.5)
             self.ready = True
-            self.scheduler.add_job(self.print_message, CronTrigger(hour="*", minute="0"))
+            self.scheduler.add_job(self.print_message, CronTrigger(hour="*", minute="59"))
             self.scheduler.start()
 
-            print("Bot is Ready!")
-
-            # self.guild = self.get_guild(773381459306217502)
-            # channel = self.get_channel(773582864335372288)
-
-            # embed = Embed(title="I AM ONLINE!", description="I am ready to go",
-            #               colour=discord.Colour.from_rgb(39, 228, 255), timestamp=datetime.utcnow())
-            #
-            # embed.set_author(name="PYTHON BOT V2.0", icon_url=self.guild.icon_url)
-            # embed.set_thumbnail(url=self.guild.icon_url)
-            #
-            # fields = [("Owner", f"{self.get_user(owner_id)}", False),
-            #           ("Inline", "This is inline", True),
-            #           ("Inline 2", "Next to inline", True),
-            #           ("Not Inline", "This is not inline", False)]
-            #
-            # for name, value, inline in fields:
-            #     embed.add_field(name=name, value=value, inline=inline)
-            #
-            # embed.set_footer(text="This is a footer!")
-            #
-            # await channel.send(embed=embed)
+            channel = self.get_channel(773582864335372288)
+            await channel.send("❤ I am Online!")
 
         else:
             print("Bot Disconnected")
 
     async def on_command_error(self, ctx, exception):
         if isinstance(exception, CommandNotFound):
-            await ctx.send("Command Not Found")
+            logs_channel = self.get_channel(778465578834853918)
+            await logs_channel.send("Command Not Found")
 
         else:
             raise exception
@@ -83,7 +94,7 @@ class Bot(BotBase):
         if event_method == "on_command_error":
             await args[0].send("Something went wrong")
         else:
-            channel = self.get_channel(773582864335372288)
+            channel = self.get_channel(778465578834853918)
             await channel.send("An Error Occurred")
 
         raise
