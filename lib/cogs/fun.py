@@ -22,8 +22,8 @@ class Fun(Cog):
     async def server_info(self, ctx):
 
         guild = self.bot.get_guild(773381459306217502)
-        bot_user = self.bot.user.split("#")[0]
-        owner = self.bot.get_user(755362525125672990).split("#")[0]
+        bot_user = str(self.bot.user).split("#")[0]
+        owner = str(self.bot.get_user(755362525125672990)).split("#")[0]
 
         embed = Embed(title=f"{guild.name}", colour=discord.Colour.from_rgb(39, 228, 255), timestamp=datetime.utcnow())
 
