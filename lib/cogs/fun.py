@@ -3,6 +3,7 @@ from discord.ext.commands import Cog
 from discord.ext.commands import command
 from discord import Embed
 from datetime import datetime
+from random import *
 
 
 class Fun(Cog):
@@ -23,7 +24,7 @@ class Fun(Cog):
 
         guild = self.bot.get_guild(773381459306217502)
         bot_user = str(self.bot.user).split("#")[0]
-        owner = str(self.bot.get_user(755362525125672990)).split("#")[0]
+        owner = str(ctx.guild.owner).split("#")[0]
 
         embed = Embed(title=f"{guild.name}", colour=discord.Colour.from_rgb(39, 228, 255), timestamp=datetime.utcnow())
 
@@ -42,10 +43,56 @@ class Fun(Cog):
 
         await ctx.send(embed=embed)
 
-    @command(description="Clears the specified amount of messages")
-    async def clear(self, ctx, purge_amount: int):
-        await ctx.send("Tidying up your server!")
-        await ctx.channel.purge(limit=purge_amount + 2)  # +2 messages because of the command plus the ctx.send message
+    @command(description="Swears at people. (No Harsh Language)")
+    async def swear(self, ctx, member: discord.Member):
+
+        bot_users_id = []
+
+        for bot_users in ctx.guild.members:
+            if bot_users.bot:
+                bot_users_id.append(bot_users.id)
+
+        if member.id in bot_users_id:
+            await ctx.send("You can't swear on bots son!")
+
+        elif member.id == ctx.message.author.id:
+            await ctx.send("Are you mad to swear yourself?")
+
+        else:
+            await ctx.send(f"{member.mention} You stupid! What do you think of yourself?")
+
+    @command(description="Wishes the member 'Happy Birthday'")
+    async def bday(self, ctx, member: discord.Member):
+        await ctx.send(f"Hey {member.mention}, Happy Birthday")
+
+    @command(aliases=['8ball'])
+    async def _8ball(self, ctx, *, question):
+        responses = ["It is certain.",
+                     "It is decidedly so.",
+                     "Without a doubt.",
+                     "Yes - definitely.",
+                     "You may rely on it.",
+                     "As I see it, yes.",
+                     "Most likely.",
+                     "Outlook good.",
+                     "Yes.",
+                     "Signs point to yes.",
+                     "Reply hazy, try again.",
+                     "Ask again later.",
+                     "Better not tell you now.",
+                     "Cannot predict now.",
+                     "Concentrate and ask again.",
+                     "Don't count on it.",
+                     "My reply is no.",
+                     "My sources say no.",
+                     "Outlook not so good.",
+                     "Very doubtful."]
+        await ctx.send(f"Question: {question}\nAnswer: {random.choice(responses)}")
+
+    @command(aliases=['link'])
+    async def invite(self, ctx):
+        link = await ctx.channel.create_invite(max_age=300)
+        await ctx.send(f"Here is an instant invite to your server:\n{link}")
 
 
 def setup(bot):
