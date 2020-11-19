@@ -97,8 +97,8 @@ class Bot(BotBase):
     async def on_member_join(self, member):
         channel = self.get_channel(773736558259994624)
         await channel.send(f"Welcome {member.mention}! Hope you have a great time in this server!")
-        role = discord.utils.get(member.guild.roles, name="Testers")
-        await member.add_roles(role)
+        testers_role = discord.utils.get(member.guild.roles, name="Testers")
+        await member.add_role(testers_role)
 
     async def on_member_remove(self, member):
         channel = self.get_channel(773736558259994624)
