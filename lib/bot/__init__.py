@@ -1,4 +1,5 @@
-from discord.ext.commands import Bot as BotBase, CommandNotFound
+import discord
+from discord.ext.commands import Bot as BotBase, CommandNotFound, MissingPermissions
 from discord import Intents
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -48,8 +49,6 @@ class Bot(BotBase):
 
     def run(self):
         print("running bot...")
-
-        print("running setup...")
         self.setup()
 
         super().run(self.TOKEN, reconnect=True)
@@ -74,12 +73,16 @@ class Bot(BotBase):
             self.scheduler.add_job(self.print_message, CronTrigger(hour="*", minute="59"))
             self.scheduler.start()
 
+            print(f"Logged in as {self.user}")
+
         else:
             print("Bot Disconnected")
 
     async def on_command_error(self, ctx, exception):
         if isinstance(exception, CommandNotFound):
             await ctx.send("Command Not Found")
+        if isinstance(exception, MissingPermissions):
+            await ctx.send("You don't have the required permissions")
         else:
             raise exception
 
@@ -90,6 +93,16 @@ class Bot(BotBase):
         logs_channel = self.get_channel(778465578834853918)
         await logs_channel.send("An Error Occurred")
         raise
+
+    async def on_member_join(self, member):
+        channel = self.get_channel(773736558259994624)
+        await channel.send(f"Welcome {member.mention}! Hope you have a great time in this server!")
+        role = discord.utils.get(member.guild.roles, name="Testers")
+        await member.add_roles(role)
+
+    async def on_member_remove(self, member):
+        channel = self.get_channel(773736558259994624)
+        await channel.send(f"{member.mention} left the server!")
 
 
 bot = Bot()
