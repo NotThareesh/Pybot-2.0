@@ -91,8 +91,12 @@ class Fun(Cog):
 
     @command(aliases=['link'])
     async def invite(self, ctx):
-        link = await ctx.channel.create_invite(max_age=300)
-        await ctx.send(f"Here is an instant invite to your server:\n{link}")
+        server_invite = await ctx.channel.create_invite(max_age=300)
+        await ctx.send(f"Here is an instant invite to your server:\n{server_invite}")
+
+    @command()
+    async def source(self, ctx):
+        await ctx.send("This is my GitHub Repository:\n https://www.github.com/NotThareesh/pybot-2.0")
 
 
 def setup(bot):
