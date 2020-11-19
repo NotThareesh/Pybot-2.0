@@ -15,7 +15,7 @@ class Mod(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        banned_words = open("./lib/cogs/banned words.txt", "r").readlines()
+        banned_words = open("./banned words.txt", "r").readlines()
 
         for word in banned_words:
             if word.strip("\n") == message.content.lower():
