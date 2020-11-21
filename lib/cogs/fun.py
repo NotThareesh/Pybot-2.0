@@ -1,6 +1,5 @@
 import discord
-from discord.ext.commands import Cog
-from discord.ext.commands import command
+from discord.ext.commands import Cog, command, BucketType, cooldown
 from discord import Embed
 from aiohttp import request
 from datetime import datetime
@@ -18,10 +17,12 @@ class Fun(Cog):
             self.bot.cogs_ready.ready_up("fun")
 
     @command(description="Displays the version of the bot", aliases=["info"])
+    @cooldown(1, 5, BucketType.user)
     async def version(self, ctx):
         await ctx.send("I am Pybot 2.0")
 
     @command(description="Shows Server Info", aliases=["server", "s-i"])
+    @cooldown(1, 5, BucketType.user)
     async def server_info(self, ctx):
 
         guild = self.bot.get_guild(773381459306217502)
@@ -46,6 +47,7 @@ class Fun(Cog):
         await ctx.send(embed=embed)
 
     @command(description="Swears at people. (No Harsh Language)")
+    @cooldown(1, 5, BucketType.user)
     async def swear(self, ctx, member: discord.Member):
 
         bot_users_id = []
@@ -64,10 +66,12 @@ class Fun(Cog):
             await ctx.send(f"{member.mention} You stupid! What do you think of yourself?")
 
     @command(description="Wishes the member 'Happy Birthday'")
+    @cooldown(1, 5, BucketType.user)
     async def bday(self, ctx, member: discord.Member):
         await ctx.send(f"Hey {member.mention}, Happy Birthday")
 
-    @command(aliases=['8ball'])
+    @command(aliases=['8ball'], description="Asks a question to the Magic 8Ball")
+    @cooldown(1, 5, BucketType.user)
     async def _8ball(self, ctx, *, question):
         responses = ["It is certain.",
                      "It is decidedly so.",
@@ -91,16 +95,19 @@ class Fun(Cog):
                      "Very doubtful."]
         await ctx.send(f"Question: {question}\nAnswer: {random.choice(responses)}")
 
-    @command(aliases=['link'])
+    @command(aliases=['link'], description="Sends a server invite link")
+    @cooldown(1, 5, BucketType.user)
     async def invite(self, ctx):
         server_invite = await ctx.channel.create_invite(max_age=300)
         await ctx.send(f"Here is an instant invite to your server:\n{server_invite}")
 
-    @command()
+    @command(description="Sends the GitHub repository of the bot")
+    @cooldown(1, 5, BucketType.user)
     async def source(self, ctx):
         await ctx.send("This is my GitHub Repository:\n <https://www.github.com/NotThareesh/pybot-2.0>")
 
-    @command()
+    @command(description="Sends 'member1' slapped 'member2' for 'reason'. (Reason isn't compulsory)")
+    @cooldown(1, 5, BucketType.user)
     async def slap(self, ctx, member: discord.Member, *, reason="no reason"):
 
         bot_users_id = []
@@ -111,14 +118,20 @@ class Fun(Cog):
 
         if member in bot_users_id:
             await ctx.send("Hey, you can't slap bots!")
+        elif reason is None:
+            await ctx.send(f"{ctx.author.display_name} slapped {member.mention}")
+        elif member.id == ctx.message.author.id:
+            await ctx.send("Really? I don't think its a good idea.")
         else:
             await ctx.send(f"{ctx.author.display_name} slapped {member.mention} for {reason}!")
 
-    @command()
+    @command(description="Duplicates your message")
+    @cooldown(1, 5, BucketType.user)
     async def echo(self, ctx, *, message):
         await ctx.send(message)
 
-    @command()
+    @command(description="Sends a meme")
+    @cooldown(1, 5, BucketType.user)
     async def meme(self, ctx):
         url = "https://meme-api.herokuapp.com/gimme"
 
@@ -132,7 +145,8 @@ class Fun(Cog):
             else:
                 await ctx.send(f"API returned a {response.status} status.")
 
-    @command()
+    @command(description="Sends a joke")
+    @cooldown(1, 5, BucketType.user)
     async def joke(self, ctx):
         url = "https://sv443.net/jokeapi/v2/joke/Miscellaneous,Dark,Pun?blacklistFlags=nsfw,religious,political,racist,sexist&type=twopart"
 
@@ -146,7 +160,8 @@ class Fun(Cog):
             else:
                 await ctx.send(f"API returned a {response.status} status.")
 
-    @command()
+    @command(description="Sends the current stats of Covid-19")
+    @cooldown(1, 5, BucketType.user)
     async def covid(self, ctx, country=None):
 
         url = "https://covid-api.mmediagroup.fr/v1/cases"
@@ -192,7 +207,8 @@ class Fun(Cog):
                 else:
                     await ctx.send(f"API returned a {response.status} status.")
 
-    @command()
+    @command(description="Sends a gif/png of Pikachu")
+    @cooldown(1, 5, BucketType.user)
     async def pikachu(self, ctx):
 
         url = "https://some-random-api.ml/img/pikachu"

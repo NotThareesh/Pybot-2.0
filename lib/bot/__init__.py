@@ -1,6 +1,6 @@
 import discord
 from discord.ext.commands import Bot as BotBase, CommandNotFound, MissingPermissions, MemberNotFound, \
-    MissingRequiredArgument
+    MissingRequiredArgument, CommandOnCooldown
 from discord import Intents
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -88,6 +88,8 @@ class Bot(BotBase):
             await ctx.send("Are you stuck in a time machine? That member isn't found!")
         elif isinstance(exception, MissingRequiredArgument):
             await ctx.send("Please pass all the required arguements")
+        elif isinstance(exception, CommandOnCooldown):
+            await ctx.send(f"Command is on cool down. Please retry after {exception.retry_after:.2f} seconds")
         else:
             raise exception
 
