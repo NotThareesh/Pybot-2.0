@@ -2,13 +2,15 @@ import discord
 from discord.ext.commands import Cog
 from discord.ext.commands import command
 from discord import Embed
+from aiohttp import request
 from datetime import datetime
-from random import *
+import random
 
 
 class Fun(Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.bot_users_id = []
 
     @Cog.listener()
     async def on_ready(self):
@@ -24,7 +26,7 @@ class Fun(Cog):
 
         guild = self.bot.get_guild(773381459306217502)
         bot_user = str(self.bot.user).split("#")[0]
-        owner = str(ctx.guild.owner).split("#")[0]
+        owner = str(ctx.guild.owner.display_name).split("#")[0]
 
         embed = Embed(title=f"{guild.name}", colour=discord.Colour.from_rgb(39, 228, 255), timestamp=datetime.utcnow())
 
@@ -96,7 +98,123 @@ class Fun(Cog):
 
     @command()
     async def source(self, ctx):
-        await ctx.send("This is my GitHub Repository:\n https://www.github.com/NotThareesh/pybot-2.0")
+        await ctx.send("This is my GitHub Repository:\n <https://www.github.com/NotThareesh/pybot-2.0>")
+
+    @command()
+    async def slap(self, ctx, member: discord.Member, *, reason="no reason"):
+
+        bot_users_id = []
+
+        for bot_users in ctx.guild.members:
+            if bot_users.bot:
+                bot_users_id.append(bot_users.id)
+
+        if member in bot_users_id:
+            await ctx.send("Hey, you can't slap bots!")
+        else:
+            await ctx.send(f"{ctx.author.display_name} slapped {member.mention} for {reason}!")
+
+    @command()
+    async def echo(self, ctx, *, message):
+        await ctx.send(message)
+
+    @command()
+    async def meme(self, ctx):
+        url = "https://meme-api.herokuapp.com/gimme"
+
+        async with request("GET", url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                embed = Embed(title=data["title"], colour=discord.Colour(0x27E4FF))
+                embed.set_image(url=data["url"])
+                await ctx.send(embed=embed)
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+    @command()
+    async def joke(self, ctx):
+        url = "https://sv443.net/jokeapi/v2/joke/Miscellaneous,Dark,Pun?blacklistFlags=nsfw,religious,political,racist,sexist&type=twopart"
+
+        async with request("GET", url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+                embed = Embed(title=data["setup"], colour=discord.Colour(0x27E4FF))
+                embed.add_field(name="\u200b", value=data["delivery"])
+                await ctx.send(embed=embed)
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
+
+    @command()
+    async def covid(self, ctx, country=None):
+
+        url = "https://covid-api.mmediagroup.fr/v1/cases"
+
+        if country:
+            async with request("GET", url, headers={}) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    embed = Embed(title=f"{country} Covid-19 Cases", colour=discord.Colour(0x27E4FF))
+                    embed.set_image(url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
+                    embed.add_field(name="Total Population", value="{:,}".format(data[country]["All"]["population"]))
+                    embed.add_field(name="\u200b", value="\u200b")
+                    embed.add_field(name="\u200b", value="\u200b")
+                    embed.add_field(name="Confirmed", value="{:,}".format(data[country]["All"]["confirmed"]))
+                    embed.add_field(name="Recovered", value="{:,}".format(data[country]["All"]["recovered"]))
+                    embed.add_field(name="Deaths", value="{:,}".format(data[country]["All"]["deaths"]))
+
+                    await ctx.send(embed=embed)
+
+                else:
+                    await ctx.send(f"API returned a {response.status} status.")
+
+        else:
+            url = "https://api.covid19api.com/summary"
+
+            async with request("GET", url, headers={}) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    embed = Embed(title="Global Covid-19 Cases", colour=discord.Colour(0x27E4FF))
+                    embed.set_image(url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
+                    embed.add_field(name="New Confirmed", value="{:,}".format(data["Global"]["NewConfirmed"]))
+                    embed.add_field(name="\u200b", value="\u200b")
+                    embed.add_field(name="\u200b", value="\u200b")
+                    embed.add_field(name="New Deaths", value="{:,}".format(data["Global"]["NewDeaths"]))
+                    embed.add_field(name="New Recovered", value="{:,}".format(data["Global"]["NewRecovered"]))
+                    embed.add_field(name="\u200b", value="\u200b")
+                    embed.add_field(name="Total Deaths", value="{:,}".format(data["Global"]["TotalDeaths"]))
+                    embed.add_field(name="Total Confirmed", value="{:,}".format(data["Global"]["TotalConfirmed"]))
+                    embed.add_field(name="Total Recovered", value="{:,}".format(data["Global"]["TotalRecovered"]))
+
+                    await ctx.send(embed=embed)
+
+                else:
+                    await ctx.send(f"API returned a {response.status} status.")
+
+    @command()
+    async def pikachu(self, ctx):
+
+        url = "https://some-random-api.ml/img/pikachu"
+
+        async with request("GET", url, headers={}) as response:
+            if response.status == 200:
+                data = await response.json()
+
+                if data["link"][-3:] == "gif":
+                    embed = Embed(title="Here's a gif of Pikachu", colour=discord.Colour(0x27E4FF))
+                    embed.set_image(url=data["link"])
+
+                    await ctx.send(embed=embed)
+
+                else:
+                    embed = Embed(title=f"Here's a picture of Pikachu", colour=discord.Colour(0x27E4FF))
+                    embed.set_image(url=data["link"])
+
+                    await ctx.send(embed=embed)
+
+            else:
+                await ctx.send(f"API returned a {response.status} status.")
 
 
 def setup(bot):

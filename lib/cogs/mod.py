@@ -1,5 +1,5 @@
 import discord
-from discord.ext.commands import Cog, MissingRequiredArgument
+from discord.ext.commands import Cog
 from discord.ext import commands
 from discord.ext.commands import command
 
@@ -26,11 +26,6 @@ class Mod(Cog):
     async def clear(self, ctx, purge_amount: int):
         await ctx.send("Tidying up your server!")
         await ctx.channel.purge(limit=purge_amount + 2)  # +2 messages because of the command plus the ctx.send message
-
-    @clear.error
-    async def clear_error(self, ctx, error):
-        if isinstance(error, MissingRequiredArgument):
-            await ctx.send("Please specify the amount of messages to delete.")
 
     @command()
     @commands.has_permissions(kick_members=True)

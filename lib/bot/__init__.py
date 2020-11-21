@@ -1,5 +1,6 @@
 import discord
-from discord.ext.commands import Bot as BotBase, CommandNotFound, MissingPermissions
+from discord.ext.commands import Bot as BotBase, CommandNotFound, MissingPermissions, MemberNotFound, \
+    MissingRequiredArgument
 from discord import Intents
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -81,8 +82,12 @@ class Bot(BotBase):
     async def on_command_error(self, ctx, exception):
         if isinstance(exception, CommandNotFound):
             await ctx.send("Command Not Found")
-        if isinstance(exception, MissingPermissions):
+        elif isinstance(exception, MissingPermissions):
             await ctx.send("You don't have the required permissions")
+        elif isinstance(exception, MemberNotFound):
+            await ctx.send("Are you stuck in a time machine? That member isn't found!")
+        elif isinstance(exception, MissingRequiredArgument):
+            await ctx.send("Please pass all the required arguements")
         else:
             raise exception
 
@@ -98,7 +103,7 @@ class Bot(BotBase):
         channel = self.get_channel(773736558259994624)
         await channel.send(f"Welcome {member.mention}! Hope you have a great time in this server!")
         testers_role = discord.utils.get(member.guild.roles, name="Testers")
-        await member.add_role(testers_role)
+        await member.add_roles(testers_role)
 
     async def on_member_remove(self, member):
         channel = self.get_channel(773736558259994624)
