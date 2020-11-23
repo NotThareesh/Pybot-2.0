@@ -1,6 +1,6 @@
 import discord
 from discord.ext.commands import Bot as BotBase, CommandNotFound, MissingPermissions, MemberNotFound, \
-    MissingRequiredArgument, CommandOnCooldown
+    MissingRequiredArgument, CommandOnCooldown, MissingRole
 from discord import Intents
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -90,15 +90,18 @@ class Bot(BotBase):
             await ctx.send("Please pass all the required arguements")
         elif isinstance(exception, CommandOnCooldown):
             await ctx.send(f"Command is on cool down. Please retry after {exception.retry_after:.2f} seconds")
+        elif isinstance(exception, MissingRole):
+            await ctx.send("You don't have the required roles.")
         else:
             raise exception
 
     async def on_error(self, event_method, *args, **kwargs):
         if event_method == "on_command_error":
             await args[0].send("Something went wrong")
-
+            
         logs_channel = self.get_channel(778465578834853918)
         await logs_channel.send("An Error Occurred")
+        
         raise
 
     async def on_member_join(self, member):
