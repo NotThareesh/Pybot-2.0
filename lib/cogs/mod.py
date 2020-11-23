@@ -2,6 +2,7 @@ import discord
 from discord.ext.commands import Cog
 from discord.ext import commands
 from discord.ext.commands import command
+from better_profanity import profanity
 
 
 class Mod(Cog):
@@ -22,13 +23,13 @@ class Mod(Cog):
                 await message.delete()
 
     @command(description="Clears the specified amount of messages")
-    @commands.has_permissions(manage_messages=True)
+    @commands.has_role("Co-ordinators")
     async def clear(self, ctx, purge_amount: int):
         await ctx.send("Tidying up your server!")
         await ctx.channel.purge(limit=purge_amount + 2)  # +2 messages because of the command plus the ctx.send message
 
     @command()
-    @commands.has_permissions(kick_members=True)
+    @commands.has_role("Co-ordinators")
     async def kick(self, ctx, member: discord.Member, *, reason=None):
         await member.kick(reason=reason)
         if reason:
@@ -37,12 +38,12 @@ class Mod(Cog):
             await ctx.send(f"{member.mention} was kicked!")
 
     @command()
-    @commands.has_permissions(ban_members=True)
+    @commands.has_role("Co-ordinators")
     async def ban(self, ctx, member: discord.Member, *, reason=None):
         await member.ban(reason=reason)
 
     @command()
-    @commands.has_permissions(ban_members=True)
+    @commands.has_role("Co-ordinators")
     async def unban(self, ctx, *, member):
         banned_users = await ctx.guild.bans()
         member_name, member_discriminator = member.split('#')

@@ -1,6 +1,6 @@
 import discord
 from discord.ext.commands import Cog, command, BucketType, cooldown
-from discord import Embed
+from discord import Embed, Colour
 from aiohttp import request
 from datetime import datetime
 import random
@@ -9,7 +9,6 @@ import random
 class Fun(Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.bot_users_id = []
 
     @Cog.listener()
     async def on_ready(self):
@@ -29,7 +28,7 @@ class Fun(Cog):
         bot_user = str(self.bot.user).split("#")[0]
         owner = str(ctx.guild.owner.display_name).split("#")[0]
 
-        embed = Embed(title=f"{guild.name}", colour=discord.Colour.from_rgb(39, 228, 255), timestamp=datetime.utcnow())
+        embed = Embed(title=f"{guild.name}", colour=Colour.from_rgb(39, 228, 255), timestamp=datetime.utcnow())
 
         embed.set_author(name=f"{bot_user}", icon_url=guild.icon_url)
         embed.set_thumbnail(url=guild.icon_url)
@@ -108,7 +107,7 @@ class Fun(Cog):
 
     @command(description="Sends 'member1' slapped 'member2' for 'reason'. (Reason isn't compulsory)")
     @cooldown(1, 5, BucketType.user)
-    async def slap(self, ctx, member: discord.Member, *, reason="no reason"):
+    async def slap(self, ctx, member: discord.Member, *, reason=None):
 
         bot_users_id = []
 
@@ -116,7 +115,7 @@ class Fun(Cog):
             if bot_users.bot:
                 bot_users_id.append(bot_users.id)
 
-        if member in bot_users_id:
+        if member.id in bot_users_id:
             await ctx.send("Hey, you can't slap bots!")
         elif reason is None:
             await ctx.send(f"{ctx.author.display_name} slapped {member.mention}")
@@ -138,7 +137,7 @@ class Fun(Cog):
         async with request("GET", url, headers={}) as response:
             if response.status == 200:
                 data = await response.json()
-                embed = Embed(title=data["title"], colour=discord.Colour(0x27E4FF))
+                embed = Embed(title=data["title"], colour=Colour(0x27E4FF))
                 embed.set_image(url=data["url"])
                 await ctx.send(embed=embed)
 
@@ -153,7 +152,7 @@ class Fun(Cog):
         async with request("GET", url, headers={}) as response:
             if response.status == 200:
                 data = await response.json()
-                embed = Embed(title=data["setup"], colour=discord.Colour(0x27E4FF))
+                embed = Embed(title=data["setup"], colour=Colour(0x27E4FF))
                 embed.add_field(name="\u200b", value=data["delivery"])
                 await ctx.send(embed=embed)
 
@@ -170,7 +169,7 @@ class Fun(Cog):
             async with request("GET", url, headers={}) as response:
                 if response.status == 200:
                     data = await response.json()
-                    embed = Embed(title=f"{country} Covid-19 Cases", colour=discord.Colour(0x27E4FF))
+                    embed = Embed(title=f"{country} Covid-19 Cases", colour=Colour(0x27E4FF))
                     embed.set_image(url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
                     embed.add_field(name="Total Population", value="{:,}".format(data[country]["All"]["population"]))
                     embed.add_field(name="\u200b", value="\u200b")
@@ -190,7 +189,7 @@ class Fun(Cog):
             async with request("GET", url, headers={}) as response:
                 if response.status == 200:
                     data = await response.json()
-                    embed = Embed(title="Global Covid-19 Cases", colour=discord.Colour(0x27E4FF))
+                    embed = Embed(title="Global Covid-19 Cases", colour=Colour(0x27E4FF))
                     embed.set_image(url="https://assets.wam.ae/uploads/2020/07/3265571968478696090.jpg")
                     embed.add_field(name="New Confirmed", value="{:,}".format(data["Global"]["NewConfirmed"]))
                     embed.add_field(name="\u200b", value="\u200b")
@@ -218,13 +217,13 @@ class Fun(Cog):
                 data = await response.json()
 
                 if data["link"][-3:] == "gif":
-                    embed = Embed(title="Here's a gif of Pikachu", colour=discord.Colour(0x27E4FF))
+                    embed = Embed(title="Here's a gif of Pikachu", colour=Colour(0x27E4FF))
                     embed.set_image(url=data["link"])
 
                     await ctx.send(embed=embed)
 
                 else:
-                    embed = Embed(title=f"Here's a picture of Pikachu", colour=discord.Colour(0x27E4FF))
+                    embed = Embed(title=f"Here's a picture of Pikachu", colour=Colour(0x27E4FF))
                     embed.set_image(url=data["link"])
 
                     await ctx.send(embed=embed)
