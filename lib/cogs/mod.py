@@ -16,11 +16,8 @@ class Mod(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        banned_words = open("./banned words.txt", "r").readlines()
-
-        for word in banned_words:
-            if word.strip("\n") == message.content.lower():
-                await message.delete()
+        if profanity.contains_profanity(message.content):
+            await message.delete()
 
     @command(description="Clears the specified amount of messages")
     @commands.has_role("Co-ordinators")
