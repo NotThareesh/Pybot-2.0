@@ -8,6 +8,18 @@ from better_profanity import profanity
 class Mod(Cog):
     def __init__(self, bot):
         self.bot = bot
+        with open("./words/whitelisted_words.txt", "r") as white_words_file:
+            white_words_list = []
+            for x in white_words_file.readlines():
+                white_words_list.append(x.strip("\n"))
+
+        with open("./words/blacklisted_words.txt", "r") as black_words_file:
+            black_words_list = []
+            for x in black_words_file.readlines():
+                black_words_list.append(x.strip("\n"))
+
+        profanity.load_censor_words(whitelist_words=white_words_list)
+        profanity.add_censor_words(black_words_list)
 
     @Cog.listener()
     async def on_ready(self):
