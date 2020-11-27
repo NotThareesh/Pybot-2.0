@@ -134,7 +134,7 @@ class Fun(Cog):
     async def meme(self, ctx):
         url = "https://meme-api.herokuapp.com/gimme"
 
-        async with request("GET", url, headers={}) as response:
+        async with request("GET", url) as response:
             if response.status == 200:
                 data = await response.json()
                 embed = Embed(title=data["title"], colour=Colour(0x27E4FF))
@@ -149,7 +149,7 @@ class Fun(Cog):
     async def joke(self, ctx):
         url = "https://sv443.net/jokeapi/v2/joke/Miscellaneous,Dark,Pun?blacklistFlags=nsfw,religious,political,racist,sexist&type=twopart"
 
-        async with request("GET", url, headers={}) as response:
+        async with request("GET", url) as response:
             if response.status == 200:
                 data = await response.json()
                 embed = Embed(title=data["setup"], colour=Colour(0x27E4FF))
@@ -166,7 +166,7 @@ class Fun(Cog):
         url = "https://covid-api.mmediagroup.fr/v1/cases"
 
         if country:
-            async with request("GET", url, headers={}) as response:
+            async with request("GET", url) as response:
                 if response.status == 200:
                     data = await response.json()
                     embed = Embed(title=f"{country} Covid-19 Cases", colour=Colour(0x27E4FF))
@@ -186,7 +186,7 @@ class Fun(Cog):
         else:
             url = "https://api.covid19api.com/summary"
 
-            async with request("GET", url, headers={}) as response:
+            async with request("GET", url) as response:
                 if response.status == 200:
                     data = await response.json()
                     embed = Embed(title="Global Covid-19 Cases", colour=Colour(0x27E4FF))
@@ -212,7 +212,7 @@ class Fun(Cog):
 
         url = "https://some-random-api.ml/img/pikachu"
 
-        async with request("GET", url, headers={}) as response:
+        async with request("GET", url) as response:
             if response.status == 200:
                 data = await response.json()
 
@@ -230,6 +230,23 @@ class Fun(Cog):
 
             else:
                 await ctx.send(f"API returned a {response.status} status.")
+
+    @command(description="Posts a picture of your Fortnite stats")
+    @cooldown(1, 5, BucketType.user)
+    async def fn(self, ctx, *, name):
+        url = "https://fortnite-api.com/v1/stats/br/v2?name={}&image=all".format(name)
+
+        async with request("GET", url) as response:
+            if response.status == 200:
+                data = await response.json()
+                await ctx.send(data["data"]["image"])
+
+            elif response.status == 403:
+                await ctx.send(f"The given user's account stats is private.")
+
+            else:
+                print(url)
+                await ctx.send(f"API returned {response.status} status.")
 
 
 def setup(bot):
