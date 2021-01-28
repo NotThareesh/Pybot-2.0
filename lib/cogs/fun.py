@@ -103,7 +103,7 @@ class Fun(Cog):
     @command(description="Sends the GitHub repository of the bot")
     @cooldown(1, 5, BucketType.user)
     async def source(self, ctx):
-        await ctx.send("This is my GitHub Repository:\n <https://www.github.com/NotThareesh/pybot-2.0>")
+        await ctx.send("This is my GitHub Repository:\n <https://www.github.com/NotThareesh/Pybot-2.0>")
 
     @command(description="Sends 'member1' slapped 'member2' for 'reason'. (Reason isn't compulsory)")
     @cooldown(1, 5, BucketType.user)
