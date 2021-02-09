@@ -7,6 +7,7 @@ from apscheduler.triggers.cron import CronTrigger
 from ..db import db
 from glob import glob
 from asyncio import sleep
+from os import environ
 
 
 PREFIX = "!"
@@ -29,8 +30,9 @@ class Ready:
 
 class Bot(BotBase):
     def __init__(self):
-        with open("./lib/bot/token.txt", "r", encoding="utf-8") as tf:
-            self.TOKEN = tf.read()
+        # with open("./lib/bot/token.txt", "r", encoding="utf-8") as tf:
+        #     self.TOKEN = tf.read()
+        self.TOKEN = environ['TOKEN']
         self.PREFIX = PREFIX
         self.guild = None
         self.scheduler = AsyncIOScheduler()
@@ -94,7 +96,7 @@ class Bot(BotBase):
         elif isinstance(exception, MemberNotFound):
             await ctx.send("Are you stuck in a time machine? That member isn't found!")
         elif isinstance(exception, MissingRequiredArgument):
-            await ctx.send("Please pass all the required arguements")
+            await ctx.send("Please pass all the required arguments")
         elif isinstance(exception, CommandOnCooldown):
             await ctx.send(f"Command is on cool down. Please retry after {exception.retry_after:.2f} seconds")
         elif isinstance(exception, MissingRole):
