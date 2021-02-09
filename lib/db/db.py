@@ -38,7 +38,7 @@ def close():
 def field(command, *values):
     cur.execute(command, tuple(values))
 
-    if (fetch := cur.fetchone()) is not None:
+    if fetch := cur.fetchone() is not None:
         return fetch[0]
 
 
