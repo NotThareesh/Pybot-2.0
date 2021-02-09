@@ -30,8 +30,6 @@ class Ready:
 
 class Bot(BotBase):
     def __init__(self):
-        # with open("./lib/bot/token.txt", "r", encoding="utf-8") as tf:
-        #     self.TOKEN = tf.read()
         self.TOKEN = environ['TOKEN']
         self.PREFIX = PREFIX
         self.guild = None
