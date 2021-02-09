@@ -12,7 +12,7 @@ from os import environ
 
 PREFIX = "!"
 OWNER_ID = 755362525125672990
-COGS = [path.split("\\")[-1][:-3] for path in glob("./lib/cogs/*.py")]
+COGS = [path.split("/")[-1][:-3] for path in glob("./lib/cogs/*.py")]
 
 
 class Ready:
