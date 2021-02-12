@@ -234,15 +234,15 @@ class Fun(Cog):
     @command(description="Posts a picture of your Fortnite stats")
     @cooldown(1, 5, BucketType.user)
     async def fn(self, ctx, *, name):
-        url = "https://fortnite-api.com/v1/stats/br/v2?name={}&image=all".format(name)
+        url = "https://fortnite-api.com/v1/stats/br/v2"
 
-        async with request("GET", url) as response:
+        async with request("GET", url, params={"name":name, "image":"all"}) as response:
             if response.status == 200:
                 data = await response.json()
                 await ctx.send(data["data"]["image"])
 
             elif response.status == 403:
-                await ctx.send(f"The given user's account stats is private.")
+                await ctx.send("The given user's account stats is private.")
 
             else:
                 print(url)
