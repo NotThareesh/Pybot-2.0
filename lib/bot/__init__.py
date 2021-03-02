@@ -7,7 +7,6 @@ from apscheduler.triggers.cron import CronTrigger
 from ..db import db
 from glob import glob
 from asyncio import sleep
-from os import environ
 
 
 PREFIX = "!"
@@ -30,7 +29,7 @@ class Ready:
 
 class Bot(BotBase):
     def __init__(self):
-        self.TOKEN = environ['TOKEN']
+        self.TOKEN = "YOUR TOKEN"
         self.PREFIX = PREFIX
         self.guild = None
         self.scheduler = AsyncIOScheduler()

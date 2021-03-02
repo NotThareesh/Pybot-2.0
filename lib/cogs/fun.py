@@ -244,6 +244,9 @@ class Fun(Cog):
             elif response.status == 403:
                 await ctx.send("The given user's account stats is private.")
 
+            elif response.status == 404:
+                await ctx.send("User not found")
+
             else:
                 print(url)
                 await ctx.send(f"API returned {response.status} status.")
